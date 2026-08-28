@@ -1,0 +1,63 @@
+name: riyaheen_aljinan
+description: رياحين الجنان - منصة إسلامية متكاملة
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # ✅ إضافة مطلوبة لحل خطأ MaterialLocalizations
+  flutter_localizations:
+    sdk: flutter
+
+  # State Management
+  provider: ^6.1.2
+
+  # Local Storage
+  shared_preferences: ^2.2.3
+  sqflite: ^2.3.3+1
+  path: ^1.9.0
+
+  # Audio
+  just_audio: ^0.9.40
+  audio_session: ^0.1.21
+
+  # Permissions
+  permission_handler: ^11.3.1
+
+  # UI
+  flutter_animate: ^4.5.0
+  shimmer: ^3.0.0
+
+  # Icons
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/
+    - assets/images/
+    - assets/audio/
+    - assets/data/
+    - assets/data/quran/
+
+  fonts:
+    - family: Uthmanic
+      fonts:
+        - asset: assets/fonts/UthmanicHafs.ttf
+
+    - family: Scheherazade
+      fonts:
+        - asset: assets/fonts/ScheherazadeNew-Regular.ttf
+        - asset: assets/fonts/ScheherazadeNew-Bold.ttf
+          weight: 700
