@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'features/home/home_page.dart';
-import 'features/quran/providers/quran_settings_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,13 +14,16 @@ void main() async {
   ]);
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor:                    Colors.transparent,
-    statusBarIconBrightness:           Brightness.light,
-    systemNavigationBarColor:          Colors.white,
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.light,
+    systemNavigationBarColor: Colors.white,
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
 
-  runApp(const RiyaheenApp());
+  // ✅ ProviderScope بدل MultiProvider: كل مزودات قسم القرآن (المستودع،
+  // الإعدادات، حالة القارئ) مُعرَّفة في quran_providers.dart وتُحقن هنا
+  // تلقائيًا لأول استخدام لها في الشجرة.
+  runApp(const ProviderScope(child: RiyaheenApp()));
 }
 
 class RiyaheenApp extends StatefulWidget {
@@ -51,44 +53,23 @@ class RiyaheenAppState extends State<RiyaheenApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<QuranSettingsProvider>(
-          create: (_) => QuranSettingsProvider()..load(),
-        ),
+    return MaterialApp(
+      title: 'رياحين الجنان',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: _themeMode,
+      locale: const Locale('ar', 'SA'),
+      supportedLocales: const [Locale('ar', 'SA'), Locale('en', 'US')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
       ],
-      child: MaterialApp(
-        title: 'رياحين الجنان',
-        debugShowCheckedModeBanner: false,
-
-        theme:     AppTheme.light,
-        darkTheme: AppTheme.dark,
-        themeMode: _themeMode,
-
-        // ✅ الإصلاح الرئيسي: إضافة localizationsDelegates
-        // هذا يحل خطأ "No MaterialLocalizations found"
-        locale: const Locale('ar', 'SA'),
-        supportedLocales: const [
-          Locale('ar', 'SA'),
-          Locale('en', 'US'),
-        ],
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-
-        // ✅ RTL عبر MaterialApp مباشرة بدلاً من Directionality wrapper منفصل
-        // لأن Directionality بدون Localizations يسبب المشكلة
-        builder: (context, child) {
-          return Directionality(
-            textDirection: TextDirection.rtl,
-            child: child!,
-          );
-        },
-
-        home: const HomePage(),
-      ),
+      builder: (context, child) {
+        return Directionality(textDirection: TextDirection.rtl, child: child!);
+      },
+      home: const HomePage(),
     );
   }
 }
